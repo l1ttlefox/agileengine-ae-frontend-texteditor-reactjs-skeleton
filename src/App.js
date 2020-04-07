@@ -8,58 +8,52 @@ import SynonymsList from './synonyms-list/SynonymsList'
 
 class App extends Component {
     state = {
-        text: '',
-        styles: [],
+        textValues: [],
+        selectedStyles: [],
         synonyms: []
     };
+    textMap = new Map();
 
     async componentDidMount() {
         const result = await getMockText();
-        this.setState({ text: result });
+        const wordsList = result.split(' ');
+        wordsList.forEach((value, i) => {
+            let id = `${value}-${i}`;
+            this.textMap.set(id, {value, id, styles: []})
+        });
+
+        this.setState({textValues: [ ...this.textMap.values()]})
     }
 
-    manageSelection = async (selection) => {
-        const synonyms = await getSynonyms(selection);
+    onWordClick = async (word, id, selectedStyles) => {
+        this.setState({selected: word, selectedId: id, selectedStyles});
+        await this.getSynonyms(word);
+        console.log(word, id);
+    };
+
+    applyStyle = (style) =>  {
+        const selectedElement = this.textMap.get(this.state.selectedId);
+        this.textMap.set(this.state.selectedId, { ...selectedElement, styles: this.addStyle(selectedElement.styles, style)});
+        this.setState({textValues: [ ...this.textMap.values()], selectedStyles: this.addStyle(selectedElement.styles, style)})
+    };
+
+    addStyle = (styles, style) => {
+        return styles.includes(style) ? styles.filter(s => s !== style) : [ ...styles, style];
+    };
+
+    getSynonyms = async (word) => {
+        const synonyms = await getSynonyms(word);
         this.setState({ synonyms });
     };
 
-    applyCommand = (style) => {
-        this.setState({ styles: this.addStyle(style) });
-        document.execCommand(style,false, null);
-    };
-
     applySynonym = (synonym) => {
-        document.execCommand('insertText', false, synonym);
-    };
-
-    checkSelectionState = () => {
-        const buttonsState = ['bold', 'italic', 'underline'];
-        let styles = [];
-        buttonsState.forEach(style => {
-            const queryCommandState = document.queryCommandState(style);
-            if (queryCommandState) {
-                styles.push(style);
-            }
-            this.setState({ styles });
-        });
-    };
-
-    onAreaClick = async () => {
-        const selection = document.getSelection().getRangeAt(0).toString();
-        this.setState({styles: []});
-        if(selection && selection.length) {
-            this.checkSelectionState();
-            await this.manageSelection(selection);
-        }
-    };
-
-    addStyle = (style) => {
-        const styles = this.state.styles;
-        return styles.includes(style) ? styles : [ ...styles, style];
+        const selectedElement = this.textMap.get(this.state.selectedId);
+        this.textMap.set(this.state.selectedId, { ...selectedElement, value: synonym });
+        this.setState({textValues: [ ...this.textMap.values()]})
     };
 
     render() {
-        const {text, synonyms, styles } = this.state;
+        const {textValues, synonyms, selectedStyles } = this.state;
         return (
             <div className="App">
                 <header>
@@ -67,17 +61,17 @@ class App extends Component {
                 </header>
                 <main>
                     <ControlPanel
-                        styles={styles}
-                        applyCommand={this.applyCommand}
+                        selectedStyles={selectedStyles}
+                        applyStyle={this.applyStyle}
                     />
                     <FileZone
-                        text={text}
-                        onAreaClick={this.onAreaClick}
+                        textValues={textValues}
+                        onWordClick={this.onWordClick}
                     >
                         {!!synonyms.length &&
                             <SynonymsList
-                                synonyms={synonyms}
                                 applySynonym={this.applySynonym}
+                                synonyms={synonyms}
                             />
                         }
                     </FileZone>
