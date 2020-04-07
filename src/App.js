@@ -18,27 +18,26 @@ class App extends Component {
         const result = await getMockText();
         const wordsList = result.split(' ');
         wordsList.forEach((value, i) => {
-            let id = `${value}-${i}`;
-            this.textMap.set(id, {value, id, styles: []})
+            const id = `${value}-${i}`;
+            this.textMap.set(id, { value, id, styles: [] })
         });
 
-        this.setState({textValues: [ ...this.textMap.values()]})
+        this.setState({ textValues: [ ...this.textMap.values()] })
     }
 
     onWordClick = async (word, id, selectedStyles) => {
-        this.setState({selected: word, selectedId: id, selectedStyles});
+        this.setState({ selected: word, selectedId: id, selectedStyles });
         await this.getSynonyms(word);
-        console.log(word, id);
     };
 
     applyStyle = (style) =>  {
         const selectedElement = this.textMap.get(this.state.selectedId);
-        this.textMap.set(this.state.selectedId, { ...selectedElement, styles: this.addStyle(selectedElement.styles, style)});
-        this.setState({textValues: [ ...this.textMap.values()], selectedStyles: this.addStyle(selectedElement.styles, style)})
+        this.textMap.set(this.state.selectedId, { ...selectedElement, styles: this.addStyle(selectedElement.styles, style) });
+        this.setState({ textValues: [ ...this.textMap.values()], selectedStyles: this.addStyle(selectedElement.styles, style) })
     };
 
     addStyle = (styles, style) => {
-        return styles.includes(style) ? styles.filter(s => s !== style) : [ ...styles, style];
+        return styles.includes(style) ? styles.filter(s => s !== style) : [...styles, style];
     };
 
     getSynonyms = async (word) => {
@@ -49,11 +48,11 @@ class App extends Component {
     applySynonym = (synonym) => {
         const selectedElement = this.textMap.get(this.state.selectedId);
         this.textMap.set(this.state.selectedId, { ...selectedElement, value: synonym });
-        this.setState({textValues: [ ...this.textMap.values()]})
+        this.setState({ textValues: [...this.textMap.values()] })
     };
 
     render() {
-        const {textValues, synonyms, selectedStyles } = this.state;
+        const { textValues, synonyms, selectedStyles } = this.state;
         return (
             <div className="App">
                 <header>
