@@ -1,4 +1,4 @@
-#control-panel {
+.control-panel {
     background-color: #fff;
     height: 25px;
     display: flex;
@@ -6,7 +6,7 @@
     flex-direction: column;
     padding-top: 5px;
 }
-#format-actions {
+.format-actions {
     width: 200px;
     margin-right: 400px;
     cursor: pointer!important;

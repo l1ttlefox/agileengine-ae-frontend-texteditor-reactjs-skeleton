@@ -1,25 +1,27 @@
-import React from 'react';
-import './ControlPanel.css';
+import React, { useCallback, useMemo } from "react";
+import "./ControlPanel.css";
 
-export const ControlPanel = ({ applyStyle, selectedStyles }) =>  {
+export const ControlPanel = ({ applyStyle, selectedStyles }) => {
+    const defineActiveClass = (style) => useMemo(
+        () => `format-action${selectedStyles.includes(style) ? " active" : ""}`,
+        [selectedStyles]
+    );
+
+    const onApplyStyle = useCallback((style) => () => applyStyle(style), [applyStyle]);
+
     return (
-        <div id="control-panel">
-            <div id="format-actions">
+        <div className="control-panel">
+            <div className="format-actions">
+                <button className={defineActiveClass('bold')} type="button" onClick={onApplyStyle('bold')}>
+                    <b>B</b>
+                </button>
+                <button className={defineActiveClass('italic')} type="button" onClick={onApplyStyle('italic')}>
+                    <i>I</i>
+                </button>
                 <button
-                    className={`format-action ${selectedStyles.includes('bold') ? 'active' : ''}`}
-                    type="button"
-                    onClick={() => applyStyle('bold')}
-                ><b>B</b></button>
-                <button
-                    className={`format-action ${selectedStyles.includes('italic') ? 'active' : ''}`}
-                    type="button"
-                    onClick={() => applyStyle('italic')}
-                ><i>I</i></button>
-                <button
-                    className={`format-action ${selectedStyles.includes('underline') ? 'active' : ''}`}
-                    type="button"
-                    onClick={() => applyStyle('underline')}
-                ><u>U</u></button>
+                    className={defineActiveClass('underline')} type="button" onClick={onApplyStyle('underline')}>
+                    <u>U</u>
+                </button>
             </div>
         </div>
     );

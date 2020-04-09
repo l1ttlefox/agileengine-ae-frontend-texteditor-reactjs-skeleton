@@ -1,4 +1,4 @@
-#file-zone {
+.file-zone {
     background-color:#f1f0f0;
     flex-grow: 1;
     display: flex;
@@ -7,7 +7,7 @@
     padding: 5px;
 }
 
-#file {
+.file {
     width: 600px;
     flex-grow: 1;
     background-color: #fff;
